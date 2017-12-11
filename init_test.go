@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/go-xorm/xorm"
+	"github.com/relax-space/go-kitt/echomiddleware"
 )
 
 var ctx context.Context
@@ -18,5 +19,5 @@ func init() {
 	xormEngine.ShowSQL(true)
 	//defer xormEngine.Close()
 	xormEngine.Sync(new(Fruit))
-	ctx = context.WithValue(context.Background(), ContextDBName, xormEngine.NewSession())
+	ctx = context.WithValue(context.Background(), echomiddleware.ContextDBName, xormEngine.NewSession())
 }

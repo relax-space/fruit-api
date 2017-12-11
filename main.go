@@ -49,14 +49,15 @@ func RegisterApi(e *echo.Echo) {
 	})
 	v := e.Group("/v1")
 	v.GET("/fruits/:id", Fruit_Get)
-	// v.GET("/fruits", Fruit_Find)
-	// v.POST("/fruits", Fruit_Post)
-	// v.PUT("/fruits", Fruit_Put)
-	// v.DELETE("/fruits/:Id", Fruit_Delete)
+	v.GET("/fruits", Fruit_Find)
+	v.POST("/fruits", Fruit_Create)
+	v.PUT("/fruits", Fruit_Update)
+	v.DELETE("/fruits/:Id", Fruit_Delete)
 }
 
 func InitDB(dialect, conn string) (newDb *xorm.Engine, err error) {
 	newDb, err = xorm.NewEngine(dialect, conn)
 	newDb.Sync(new(Fruit))
+	newDb.ShowSQL(true)
 	return
 }
