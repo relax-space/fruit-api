@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -74,11 +73,13 @@ func (Fruit) Find(ctx context.Context, limit, start int) (httpStatus int, totalC
 }
 
 func (f *Fruit) Update(ctx context.Context) (httpStatus int, err error) {
-	fmt.Printf("%T,%v", f, f)
-
 	httpStatus = http.StatusNoContent
 	rowCount, err := factory.DB(ctx).Table("fruit").ID(f.Id).Update(f)
-	if err != nil || rowCount == 0 {
+	if err != nil {
+		httpStatus = http.StatusInternalServerError
+		return
+	} else if rowCount == 0 {
+		err = errors.New("no data has changed.")
 		httpStatus = http.StatusInternalServerError
 		return
 	}
@@ -88,7 +89,11 @@ func (f *Fruit) Update(ctx context.Context) (httpStatus int, err error) {
 func (f *Fruit) Create(ctx context.Context) (httpStatus int, err error) {
 	httpStatus = http.StatusCreated
 	rowCount, err := factory.DB(ctx).InsertOne(f)
-	if err != nil || rowCount == 0 {
+	if err != nil {
+		httpStatus = http.StatusInternalServerError
+		return
+	} else if rowCount == 0 {
+		err = errors.New("no data has changed.")
 		httpStatus = http.StatusInternalServerError
 		return
 	}
@@ -98,7 +103,11 @@ func (f *Fruit) Create(ctx context.Context) (httpStatus int, err error) {
 func (Fruit) CreateBatch(ctx context.Context, fruits *[]Fruit) (httpStatus int, err error) {
 	httpStatus = http.StatusCreated
 	rowCount, err := factory.DB(ctx).Insert(fruits)
-	if err != nil || rowCount == 0 {
+	if err != nil {
+		httpStatus = http.StatusInternalServerError
+		return
+	} else if rowCount == 0 {
+		err = errors.New("no data has changed.")
 		httpStatus = http.StatusInternalServerError
 		return
 	}
@@ -108,7 +117,11 @@ func (Fruit) CreateBatch(ctx context.Context, fruits *[]Fruit) (httpStatus int, 
 func (Fruit) Delete(ctx context.Context, id int64) (httpStatus int, err error) {
 	httpStatus = http.StatusNoContent
 	rowCount, err := factory.DB(ctx).ID(id).Delete(&Fruit{})
-	if err != nil || rowCount == 0 {
+	if err != nil {
+		httpStatus = http.StatusInternalServerError
+		return
+	} else if rowCount == 0 {
+		err = errors.New("no data has changed.")
 		httpStatus = http.StatusInternalServerError
 		return
 	}

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -57,7 +56,6 @@ func Fruit_Update(c echo.Context) error {
 		return c.JSON(http.StatusOK, ErrorResult(err.Error()))
 	}
 
-	fmt.Printf("%T,%v", fruit, fruit)
 	status, err := fruit.Update(c.Request().Context())
 	if err != nil {
 		return c.JSON(status, ErrorResult(err.Error()))
