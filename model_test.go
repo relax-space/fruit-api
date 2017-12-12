@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"kit/test"
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/relax-space/go-kit/test"
 )
 
 func Test_Fruit_Create(t *testing.T) {
