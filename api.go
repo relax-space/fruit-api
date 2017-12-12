@@ -35,7 +35,7 @@ func Fruit_Find(c echo.Context) error {
 	if err != nil {
 		return c.JSON(status, ErrorResult(err.Error()))
 	}
-	return c.JSON(status, kmodel.ArrayResult{TotalCount: totalCount, Items: result})
+	return c.JSON(status, SuccessResult(kmodel.ArrayResult{TotalCount: totalCount, Items: result}))
 }
 
 func Fruit_Create(c echo.Context) error {
