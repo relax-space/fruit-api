@@ -41,7 +41,7 @@ func Fruit_Find(c echo.Context) error {
 func Fruit_Create(c echo.Context) error {
 	fruits := new([]Fruit)
 	if err := c.Bind(fruits); err != nil {
-		return c.JSON(http.StatusOK, ErrorResult(err.Error()))
+		return c.JSON(http.StatusBadRequest, ErrorResult(err.Error()))
 	}
 	status, err := Fruit{}.CreateBatch(c.Request().Context(), fruits)
 	if err != nil {
@@ -51,12 +51,18 @@ func Fruit_Create(c echo.Context) error {
 }
 
 func Fruit_Update(c echo.Context) error {
-	fruit := new(Fruit)
-	if err := c.Bind(fruit); err != nil {
-		return c.JSON(http.StatusOK, ErrorResult(err.Error()))
+
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, ErrorResult(err.Error()))
 	}
 
-	status, err := fruit.Update(c.Request().Context())
+	fruit := new(Fruit)
+	if err := c.Bind(fruit); err != nil {
+		return c.JSON(http.StatusBadRequest, ErrorResult(err.Error()))
+	}
+
+	status, err := fruit.Update(c.Request().Context(), id)
 	if err != nil {
 		return c.JSON(status, ErrorResult(err.Error()))
 	}

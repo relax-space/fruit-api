@@ -72,9 +72,9 @@ func (Fruit) Find(ctx context.Context, limit, start int) (httpStatus int, totalC
 	return
 }
 
-func (f *Fruit) Update(ctx context.Context) (httpStatus int, err error) {
+func (f *Fruit) Update(ctx context.Context, id int64) (httpStatus int, err error) {
 	httpStatus = http.StatusNoContent
-	rowCount, err := factory.DB(ctx).Table("fruit").ID(f.Id).Update(f)
+	rowCount, err := factory.DB(ctx).Table("fruit").ID(id).Update(f)
 	if err != nil {
 		httpStatus = http.StatusInternalServerError
 		return
