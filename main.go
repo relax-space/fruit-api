@@ -4,6 +4,7 @@ import (
 	"flag"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/relax-space/go-kitt/echomiddleware"
 
@@ -40,6 +41,7 @@ func main() {
 
 }
 func RegisterApi(e *echo.Echo) {
+	jwtEnv := flag.String("JWT_SECRET", os.Getenv("JWT_SECRET"), "JWT_SECRET")
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "fruit-api")
@@ -53,6 +55,31 @@ func RegisterApi(e *echo.Echo) {
 	v.POST("/fruits", Fruit_Create)
 	v.PUT("/fruits", Fruit_Update)
 	v.DELETE("/fruits/:Id", Fruit_Delete)
+
+	v2 := e.Group("/v2")
+	v2.GET("/fruits/:id", Fruit_Get)
+	v2.GET("/fruits", Fruit_Find)
+	v2.POST("/fruits", Fruit_Create)
+	v2.PUT("/fruits", Fruit_Update)
+	v2.DELETE("/fruits/:Id", Fruit_Delete)
+
+	e.Use(middleware.JWTWithConfig(middleware.JWTConfig{
+		SigningKey: []byte(*jwtEnv),
+		Skipper: func(c echo.Context) bool {
+			ignore := []string{
+				"/ping",
+				"/v1",
+			}
+			for _, i := range ignore {
+				if strings.HasPrefix(c.Request().URL.Path, i) {
+					return true
+				}
+			}
+
+			return false
+		},
+	}))
+
 }
 
 func InitDB(dialect, conn string) (newDb *xorm.Engine, err error) {

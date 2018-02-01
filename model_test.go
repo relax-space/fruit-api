@@ -35,12 +35,10 @@ func Test_Fruit_Get(t *testing.T) {
 
 func Test_Fruit_Update(t *testing.T) {
 	f := &Fruit{
-		Id: 14,
-		//Code: time.Now().Format("0102150405"),
 		Name: "test update4",
 	}
 
-	status, err := f.Update(ctx)
+	status, err := f.Update(ctx, 15)
 	test.Ok(t, err)
 	test.Equals(t, http.StatusNoContent, status)
 }
