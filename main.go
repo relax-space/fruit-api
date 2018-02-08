@@ -53,15 +53,15 @@ func RegisterApi(e *echo.Echo) {
 	v.GET("/fruits/:id", Fruit_Get)
 	v.GET("/fruits", Fruit_Find)
 	v.POST("/fruits", Fruit_Create)
-	v.PUT("/fruits", Fruit_Update)
-	v.DELETE("/fruits/:Id", Fruit_Delete)
+	v.PUT("/fruits/:id", Fruit_Update)
+	v.DELETE("/fruits/:id", Fruit_Delete)
 
 	v2 := e.Group("/v2")
 	v2.GET("/fruits/:id", Fruit_Get)
 	v2.GET("/fruits", Fruit_Find)
 	v2.POST("/fruits", Fruit_Create)
-	v2.PUT("/fruits", Fruit_Update)
-	v2.DELETE("/fruits/:Id", Fruit_Delete)
+	v2.PUT("/fruits/:id", Fruit_Update)
+	v2.DELETE("/fruits/:id", Fruit_Delete)
 
 	e.Use(middleware.JWTWithConfig(middleware.JWTConfig{
 		SigningKey: []byte(*jwtEnv),

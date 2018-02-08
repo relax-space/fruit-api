@@ -12,14 +12,14 @@ import (
 )
 
 type Fruit struct {
-	Id        int64     `json:"id" xorm:"int64 notnull autoincr pk 'id'"`
-	CreatedAt time.Time `json:"created_at" xorm:"created"`
-	UpdatedAt time.Time `json:"updated_at" xorm:"updated"`
-	Code      string    `json:"code" xorm:"varchar(10)"`
-	Name      string    `json:"name" xorm:"nvarchar(50)"`
-	Color     string    `json:"color" xorm:"varchar(10)"`
-	Price     int64     `json:"price"`
-	StoreCode string    `json:"store_code" xorm:"varchar(10)"`
+	Id        int64     `json:"id" xml:"id" form:"id" xorm:"int64 notnull autoincr pk 'id'"`
+	CreatedAt time.Time `json:"created_at" xml:"created_at" form:"created_at" xorm:"created"`
+	UpdatedAt time.Time `json:"updated_at" xml:"updated_at" form:"updated_at" xorm:"updated"`
+	Code      string    `json:"code" xml:"code" form:"code" xorm:"varchar(10)"`
+	Name      string    `json:"name" xml:"name" form:"name" xorm:"nvarchar(50)"`
+	Color     string    `json:"color" xml:"color" form:"color" xorm:"varchar(10)"`
+	Price     int64     `json:"price" xml:"price" form:"price"`
+	StoreCode string    `json:"store_code" xml:"store_code" form:"store_code" xorm:"varchar(10)"`
 }
 
 func (Fruit) TableName() string {
