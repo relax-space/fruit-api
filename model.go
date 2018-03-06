@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"net/http"
 	"time"
 
 	"github.com/go-xorm/xorm"
@@ -26,103 +25,89 @@ func (Fruit) TableName() string {
 	return "fruit"
 }
 
-func (Fruit) Get(ctx context.Context, id int64) (httpStatus int, fruit *Fruit, err error) {
-	httpStatus = http.StatusOK
+func (Fruit) Get(ctx context.Context, id int64) (fruit *Fruit, err error) {
 	fruit = &Fruit{}
 	has, err := factory.DB(ctx).ID(id).Get(fruit)
 	if err != nil {
-		httpStatus = http.StatusInternalServerError
 		return
 	} else if has == false {
-		err = errors.New("no data has found.")
+		err = errors.New("no data has found. ")
 		return
 	}
 	return
 }
 
-func (Fruit) Find(ctx context.Context, limit, start int) (httpStatus int, totalCount int64, fruits []Fruit, err error) {
-	httpStatus = http.StatusOK
-	queryBuild := func() *xorm.Session {
-		return factory.DB(ctx)
-	}
+func (Fruit) FindNames(ctx context.Context) (names []string, err error) {
+	err = factory.DB(ctx).Table("fruit").Select("name").Find(&names)
+	return
+}
+
+func (Fruit) Find(ctx context.Context, limit, start int) (totalCount int64, fruits []Fruit, err error) {
+	session := *(factory.DB(ctx))
 	errc := make(chan error)
-	go func() {
-		if totalCount, err = queryBuild().Count(&Fruit{}); err != nil {
+	go func(session xorm.Session) {
+		if totalCount, err = session.Count(&Fruit{}); err != nil {
 			errc <- err
 			return
 		}
 		errc <- nil
-	}()
-	go func() {
-		if err = queryBuild().Limit(limit, start).Find(&fruits); err != nil {
+	}(session)
+	go func(session xorm.Session) {
+		if err = session.Limit(limit, start).Find(&fruits); err != nil {
 			errc <- err
 			return
 		}
 		errc <- nil
-	}()
+	}(session)
 
 	if err = <-errc; err != nil {
-		httpStatus = http.StatusInternalServerError
 		return
 	}
 	if err = <-errc; err != nil {
-		httpStatus = http.StatusInternalServerError
 		return
 	}
 	return
 }
 
-func (f *Fruit) Update(ctx context.Context, id int64) (httpStatus int, err error) {
-	httpStatus = http.StatusNoContent
+func (f *Fruit) Update(ctx context.Context, id int64) (err error) {
 	rowCount, err := factory.DB(ctx).Table("fruit").ID(id).Update(f)
 	if err != nil {
-		httpStatus = http.StatusInternalServerError
 		return
 	} else if rowCount == 0 {
 		err = errors.New("no data has changed.")
-		httpStatus = http.StatusInternalServerError
 		return
 	}
 	return
 }
 
-func (f *Fruit) Create(ctx context.Context) (httpStatus int, err error) {
-	httpStatus = http.StatusCreated
+func (f *Fruit) Create(ctx context.Context) (err error) {
 	rowCount, err := factory.DB(ctx).InsertOne(f)
 	if err != nil {
-		httpStatus = http.StatusInternalServerError
 		return
 	} else if rowCount == 0 {
 		err = errors.New("no data has changed.")
-		httpStatus = http.StatusInternalServerError
 		return
 	}
 	return
 }
 
-func (Fruit) CreateBatch(ctx context.Context, fruits *[]Fruit) (httpStatus int, err error) {
-	httpStatus = http.StatusCreated
+func (Fruit) CreateBatch(ctx context.Context, fruits *[]Fruit) (err error) {
 	rowCount, err := factory.DB(ctx).Insert(fruits)
 	if err != nil {
-		httpStatus = http.StatusInternalServerError
 		return
 	} else if rowCount == 0 {
 		err = errors.New("no data has changed.")
-		httpStatus = http.StatusInternalServerError
 		return
 	}
 	return
 }
 
-func (Fruit) Delete(ctx context.Context, id int64) (httpStatus int, err error) {
-	httpStatus = http.StatusNoContent
+func (Fruit) Delete(ctx context.Context, id int64) (err error) {
 	rowCount, err := factory.DB(ctx).ID(id).Delete(&Fruit{})
 	if err != nil {
-		httpStatus = http.StatusInternalServerError
 		return
 	} else if rowCount == 0 {
 		err = errors.New("no data has changed.")
-		httpStatus = http.StatusInternalServerError
 		return
 	}
 	return
